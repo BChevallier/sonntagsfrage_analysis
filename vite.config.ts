@@ -3,7 +3,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
-  base: "/revealjs_template/",
+  base: "/sonntagsfrage-config/",
   // esbuild: {
   //   jsxFactory: "JSX.createElement",
   //   jsxFragment: "HTMLElement",
