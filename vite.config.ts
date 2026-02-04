@@ -3,7 +3,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
-  base: "/sonntagsfrage-analysis/",
+  base: "/sonntagsfrage_analysis/",
   // esbuild: {
   //   jsxFactory: "JSX.createElement",
   //   jsxFragment: "HTMLElement",
