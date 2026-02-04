@@ -6,7 +6,7 @@
 2. Press "Use this template"
 3. Modify slides (sections) under docs
 
-#### localhost presentation
+#### localhost presentation 
 
 1. Open package.json
 2. Run line format
