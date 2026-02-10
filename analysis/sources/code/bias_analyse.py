@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-dark_mode = True
+dark_mode = False
 institutes = {'FORSA': "Forsa", 'DIMAP': "Infratest dimap", 'FOWA':"Forsch'gr. Wahlen", 'ALLENS':"Allensberger", 'GMS':"GMS", 'INSA':"INSA", 'YOUGOV':"YouGov",'VERIAN':"Verian (Emnid)"}
 parties = {
     'CDU/CSU': 'black',
@@ -42,18 +42,19 @@ for institute in institutes:
     df_institute = df_umfragen[df_umfragen['institute_id'] == institute]
     for i,party in enumerate(parties):
         df_deviations[party] = pd.to_numeric(df_institute[party], errors='coerce')-pd.to_numeric(df_averages[party], errors='coerce')
-        sns.histplot(df_deviations[party], bins=12, ax=axes[i], kde=True,edgecolor='white', linewidth=0.5, alpha=0.2)
+        sns.histplot(df_deviations[party], bins=12, ax=axes[i], kde=True,edgecolor='white', linewidth=0.5, alpha=0.2, label="deviations from 30D-average")
         axes[i].set_facecolor(bg_color)
         axes[i].axvline(df_deviations[party].mean(), color='red',label="mean deviation")
-        axes[i].axvline(0, color=ax_color, linestyle='dashed', linewidth=0.5)
+        axes[i].axvline(0, color=ax_color, linestyle='dashed', linewidth=0.5, label="30 day average")
         axes[i].set_xlabel("Deviation of the aggregated mean", color=ax_color)
         axes[i].tick_params(axis="x", colors=ax_color)
         axes[i].tick_params(axis="y", colors=ax_color)
         axes[i].set_title(party, color=ax_color)
         for spine in axes[i].spines.values():
             spine.set_color(ax_color)
+    axes[2].legend()
 
-    fig.suptitle(f"{institutes[institute]} (n={n})", fontsize=20, color='white')
+    fig.suptitle(f"{institutes[institute]} (n={n})", fontsize=20, color=ax_color)
 
     sns.despine()
     plt.tight_layout(rect=[0, 0, 1, 0.95])

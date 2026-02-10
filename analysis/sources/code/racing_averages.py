@@ -15,6 +15,8 @@ PATH="../data/umfragen_wahlrecht.csv"
 df_umfragen = pd.read_csv(PATH, parse_dates=['date'])
 df_umfragen.set_index("date", inplace=True)
 
+print(df_umfragen["institute_id"].unique())
+
 parties = {
     'CDU/CSU': 'black',
     'SPD': 'red',
@@ -85,7 +87,7 @@ def animate(i):
             points[count].set_offsets([[x, y]])
         else:
             points[count].set_offsets([np.empty(2)])
-    title.set_text(df_average.index[i*jump_size].year)
+    #title.set_text(df_average.index[i*jump_size].year)
     print(f"Frame {i}/{len(df_average)//jump_size-1} generated!")
     return lines+points+ [title]
 
@@ -96,7 +98,7 @@ ani = FuncAnimation(fig, animate, frames=len(df_average)//jump_size, init_func=i
 writer = FFMpegWriter(
     fps=60,
     metadata=dict(artist="you"),
-    bitrate=1800,
+    bitrate=3600,
 )
 
 print("Saving animation ...")
