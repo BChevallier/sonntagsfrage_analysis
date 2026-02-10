@@ -3,9 +3,9 @@ from matplotlib.animation import FuncAnimation, FFMpegWriter
 import pandas as pd
 import seaborn as sns
 
-window_size = 10 #in days
-frame_number = 365
-dark_mode = False
+window_size = 5 #in days
+frame_number = 1000
+dark_mode = True
 
 PATH="../data/umfragen_wahlrecht.csv"
 df = pd.read_csv(PATH, parse_dates=['date'])
@@ -94,11 +94,11 @@ if plot_elections:
 writer = FFMpegWriter(
     fps=60,
     metadata=dict(artist="you"),
-    bitrate=1800,
+    bitrate=3600,
 )
 
 ani.save(
-    f"../../output/animations/sonntagsfrage_rolling_window_{file_ending}.gif",
+    f"../../output/animations/sonntagsfrage_rolling_window_{file_ending}.mp4",
     writer=writer
 )
 

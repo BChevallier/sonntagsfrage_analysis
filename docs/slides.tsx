@@ -1,6 +1,16 @@
 import JSX from "docs/jsx.ts";
-import { reference } from "docs/sections/reference.tsx";
+import { section1 } from "docs/sections/1.tsx";
+import { section2 } from "docs/sections/2.tsx";
+import { section3 } from "docs/sections/3.tsx";
+import { section4 } from "docs/sections/4.tsx";
 
 export function slides() {
-  return <div class="slides">{reference()}</div>;
+  return (
+    <div class="slides">
+      {section1()}
+      {section2()}
+      {section3()}
+      {section4()}
+    </div>
+  );
 }
