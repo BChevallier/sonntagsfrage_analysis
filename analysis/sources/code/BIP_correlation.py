@@ -1,10 +1,11 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.colors as mcolors
 
-reg_plot = True
 dark_mode = False
+reg_plot = False
 parties = {
     'CDU/CSU': 'black',
     'SPD': 'red',
@@ -28,38 +29,39 @@ else:
     ax_color = "black"
     file_ending = "light"
 
-df_VPI = pd.read_csv('../data/VPI.csv', sep=",", parse_dates=["date"], date_format="%Y-%m")
-df_VPI.sort_values("date", inplace=True)
-df_VPI=df_VPI[df_VPI["value_unit"]!="%"].reset_index(drop=True)
-df_VPI.set_index("date", inplace=True)
-df_VPI.drop(columns=["value_unit"], inplace=True)
-df_VPI["value"]=df_VPI["value"].astype(float)
-df_VPI.rename(columns={"value":"VPI"}, inplace=True)
+df_BIP=pd.read_csv("../data/BIP.csv", sep=";", parse_dates=["time"], date_format="%Y")
+df_BIP=df_BIP[df_BIP["value_variable_label"] == "Bruttoinlandsprodukt"]
+df_BIP=df_BIP[["time","value"]]
+df_BIP=df_BIP.sort_values(by="time", ascending=True)
+df_BIP.set_index("time", inplace=True)
+df_BIP["BIP"]=df_BIP["value"].str.replace(",",".").astype(float)
+df_BIP.drop(columns=["value"], inplace=True)
 
-df_survey = pd.read_csv("../../output/survey_averages/30D_survey_averages.csv", sep=",", parse_dates=["date"])
+df_surveys = pd.read_csv("../../output/survey_averages/30D_survey_averages.csv", parse_dates=["date"])
+df_surveys.set_index("date", inplace=True)
 
-df_comb=df_survey.merge(df_VPI, how="inner", on="date")
-df_comb.set_index("date", inplace=True)
-df_corr=df_comb.corr(numeric_only=True)
-df_corr_col=df_corr["VPI"].drop("VPI")
-sns.heatmap(df_corr_col.to_frame(), cmap="coolwarm", square=True,)
-print(df_corr_col)
+df_comb=pd.concat([df_surveys,df_BIP], axis=1)
+df_comb.dropna(subset=["BIP"],inplace=True, axis=0)
 
-fig, ax = plt.subplots(facecolor=bg_color, figsize=(9,6))
+df_corr = df_comb.corr(numeric_only=True)
+print(df_corr.iloc[-1])
+
+fig, ax = plt.subplots(facecolor=bg_color)
 for spine in ax.spines.values():
     spine.set_color(ax_color)
 ax.set_facecolor(bg_color)
 ax.tick_params(axis='x', colors=ax_color)
 ax.tick_params(axis='y', colors=ax_color)
-ax.set_title("Verlauf des VPI", color=ax_color)
+ax.set_title("Verlauf des BIP", color=ax_color)
 ax.set_xlabel("Zeit", color=ax_color)
-ax.set_ylabel("Verbraucherpreisindex", color=ax_color)
-sns.lineplot(data=df_VPI, x="date", y="VPI",ax=ax)
+ax.set_ylabel("Bruttoinlandsprodukt", color=ax_color)
+sns.lineplot(data=df_BIP, x="time", y="BIP",ax=ax, color="blue")
 sns.despine()
 plt.xticks(rotation=45)
 plt.tight_layout()
 
-plt.savefig(f"../../output/line_plots/VPI_Verlauf_{file_ending}.svg")
+sns.lineplot(data=df_BIP, x=df_BIP.index, y="BIP")
+plt.savefig(f"../../output/line_plots/BIP_Verlauf_{file_ending}.svg")
 
 if reg_plot:
     for party in parties:
@@ -76,18 +78,20 @@ if reg_plot:
         ax.tick_params(axis='y', colors=ax_color)
         for spine in ax.spines.values():
             spine.set_color(ax_color)
-        ax.set_title(f"{party} vs VPI (r={round(df_corr.loc[party, "VPI"], 2)})", color=ax_color)
+        ax.set_title(f"{party} vs BIP (r={round(df_corr.loc[party, "BIP"], 2)})", color=ax_color)
         sns.despine(ax=ax)
         sns.regplot(
             data=df_comb,
             x=party,
-            y="VPI",
+            y="BIP",
             scatter_kws={'color': scatter_color, 'alpha': 0.7, 'label': party, "s": 10},
             line_kws={'color': "red", 'alpha': 0.6, "linewidth": 2},
             ax=ax
         )
         ax.set_xlabel("Umfragewerte", color=ax_color)
-        ax.set_ylabel("Verbraucherpreisindex", color=ax_color)
-        fig.savefig(f"../../output/correlations/{party.replace("/", "_")}_vs_VPI_{file_ending}.svg")
+        ax.set_ylabel("Bruttoinlandsprodukt", color=ax_color)
+        fig.savefig(f"../../output/correlations/{party.replace("/", "_")}_vs_BIP_{file_ending}.svg")
 plt.show()
+
+
 

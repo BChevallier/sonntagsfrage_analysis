@@ -26,7 +26,7 @@ def corr_matrices():
     cols = 1
     n = len(remaining_elections)
     rows = math.ceil(n / cols)
-    fig, axes = plt.subplots(rows, cols, figsize=(cols * 6, rows * 4), constrained_layout=True)
+    fig, axes = plt.subplots(rows, cols, figsize=(cols * 6, rows * 5), constrained_layout=True)
     axes_flat = np.array(axes).flatten()
 
     last_im = None
@@ -85,7 +85,7 @@ def corr_matrices():
 
     if last_im is not None:
         fig.colorbar(last_im, ax=axes_flat.tolist(), fraction=0.02, pad=0.1)
-    plt.savefig("../../output/correlations/2017-2026_corr-matrix.png")
+    plt.savefig("../../output/correlations/2017-2026_corr-matrix.svg")
     plt.show()
 
 corr_matrices()
