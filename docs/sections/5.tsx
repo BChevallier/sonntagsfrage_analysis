@@ -7,7 +7,7 @@ import Grüne from "analysis/output/correlations/GRÜNE_vs_DAX_dark.svg"
 import Linke from "analysis/output/correlations/LINKE_vs_DAX_dark.svg"
 import SPD from "analysis/output/correlations/SPD_vs_DAX_dark.svg"
 
-export function section5() {
+export function sectionDAX() {
   return [
     <section>
       <section>
