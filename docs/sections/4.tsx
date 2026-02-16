@@ -7,14 +7,6 @@ import INFRA_bias from "analysis/output/survey_deviations/Infratest dimap_dark.s
 import INSA_bias from "analysis/output/survey_deviations/INSA_dark.svg";
 import VERIAN_bias from "analysis/output/survey_deviations/Verian (Emnid)_dark.svg";
 import YOUGOV_bias from "analysis/output/survey_deviations/YouGov_dark.svg";
-import BIP from "../../analysis/output/line_plots/BIP_Verlauf_dark.svg";
-import AfD from "../../analysis/output/correlations/AfD_vs_BIP_dark.svg";
-import CDU_CSU from "../../analysis/output/correlations/CDU_CSU_vs_BIP_dark.svg";
-import FDP from "../../analysis/output/correlations/FDP_vs_BIP_dark.svg";
-import Grüne from "../../analysis/output/correlations/GRÜNE_vs_BIP_dark.svg";
-import Linke from "../../analysis/output/correlations/LINKE_vs_BIP_dark.svg";
-import SPD from "../../analysis/output/correlations/SPD_vs_BIP_dark.svg";
-
 
 export function section4() {
   return [
@@ -82,13 +74,19 @@ export function section4() {
           <tr>
             <td>Grüne</td>
             <td>
-              <a href="#/14/4">0.28</a>
+              <a href="#/14/4">
+                <span style="visibility:hidden">-</span>0.28
+              </a>
             </td>
             <td>
-              <a href="#/12/4">0.38</a>
+              <a href="#/12/4">
+                <span style="visibility:hidden">-</span>0.38
+              </a>
             </td>
             <td>
-              <a href="#/10/4">0.45</a>
+              <a href="#/10/4">
+                <span style="visibility:hidden">-</span>0.45
+              </a>
             </td>
           </tr>
           <tr>
@@ -118,13 +116,19 @@ export function section4() {
           <tr>
             <td>AfD</td>
             <td>
-              <a href="#/14/1">0.84</a>
+              <a href="#/14/1">
+                <span style="visibility:hidden">-</span>0.84
+              </a>
             </td>
             <td>
-              <a href="#/12/1">0.82</a>
+              <a href="#/12/1">
+                <span style="visibility:hidden">-</span>0.82
+              </a>
             </td>
             <td>
-              <a href="#/10/1">0.81</a>
+              <a href="#/10/1">
+                <span style="visibility:hidden">-</span>0.81
+              </a>
             </td>
           </tr>
         </tbody>
