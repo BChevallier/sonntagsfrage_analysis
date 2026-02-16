@@ -10,6 +10,14 @@ import SPD from "analysis/output/correlations/SPD_vs_DAX_dark.svg"
 export function sectionDAX() {
   return [
     <section>
+      <h2>Datensatz 5</h2>
+      2000 - heute
+      <br />
+      wöchentlicher Punktestand (n=1.362)
+      <br />
+      Quelle: investing.de
+    </section>,
+    <section>
       <section>
         <img src={DAX} alt="Verlauf des DAX seit 2000" />
       </section>

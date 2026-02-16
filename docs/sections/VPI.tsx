@@ -1,5 +1,5 @@
 import JSX from "docs/jsx.ts";
-import DAX from "analysis/output/line_plots/VPI_Verlauf_dark.svg";
+import VPI from "analysis/output/line_plots/VPI_Verlauf_dark.svg";
 import AfD from "analysis/output/correlations/AfD_vs_VPI_dark.svg";
 import CDU_CSU from "analysis/output/correlations/CDU_CSU_vs_VPI_dark.svg";
 import FDP from "analysis/output/correlations/FDP_vs_VPI_dark.svg";
@@ -10,8 +10,16 @@ import SPD from "analysis/output/correlations/SPD_vs_VPI_dark.svg";
 export function sectionVPI() {
   return [
     <section>
+      <h2>Datensatz 4</h2>
+      2000 - heute
+      <br />
+      monatlicher VPI (n=312)
+      <br />
+      Quelle: destatits.de
+    </section>,
+    <section>
       <section>
-        <img src={DAX} alt="Verlauf des VPI seit 2000" />
+        <img src={VPI} alt="Verlauf des VPI seit 2000" />
       </section>
       <section>
         <img src={AfD} alt="Korrelation AfD mit VPI" />
