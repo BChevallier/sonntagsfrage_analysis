@@ -7,6 +7,13 @@ import INFRA_bias from "analysis/output/survey_deviations/Infratest dimap_dark.s
 import INSA_bias from "analysis/output/survey_deviations/INSA_dark.svg";
 import VERIAN_bias from "analysis/output/survey_deviations/Verian (Emnid)_dark.svg";
 import YOUGOV_bias from "analysis/output/survey_deviations/YouGov_dark.svg";
+import BIP from "../../analysis/output/line_plots/BIP_Verlauf_dark.svg";
+import AfD from "../../analysis/output/correlations/AfD_vs_BIP_dark.svg";
+import CDU_CSU from "../../analysis/output/correlations/CDU_CSU_vs_BIP_dark.svg";
+import FDP from "../../analysis/output/correlations/FDP_vs_BIP_dark.svg";
+import Grüne from "../../analysis/output/correlations/GRÜNE_vs_BIP_dark.svg";
+import Linke from "../../analysis/output/correlations/LINKE_vs_BIP_dark.svg";
+import SPD from "../../analysis/output/correlations/SPD_vs_BIP_dark.svg";
 
 
 export function section4() {
@@ -36,6 +43,92 @@ export function section4() {
       <section>
         <img src={YOUGOV_bias} alt="Biasanalyse YouGov" />
       </section>
+    </section>,
+    <section>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>DAX (n=1362)</th>
+            <th>VPI (n=312)</th>
+            <th>BIP (n=25)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CDU/CSU</td>
+            <td>
+              <a href="#/14/2">-0.69</a>
+            </td>
+            <td>
+              <a href="#/12/2">-0.71</a>
+            </td>
+            <td>
+              <a href="#/10/2">-0.69</a>
+            </td>
+          </tr>
+          <tr>
+            <td>SPD</td>
+            <td>
+              <a href="#/14/6">-0.77</a>
+            </td>
+            <td>
+              <a href="#/12/6">-0.79</a>
+            </td>
+            <td>
+              <a href="#/10/6">-0.75</a>
+            </td>
+          </tr>
+          <tr>
+            <td>Grüne</td>
+            <td>
+              <a href="#/14/4">0.28</a>
+            </td>
+            <td>
+              <a href="#/12/4">0.38</a>
+            </td>
+            <td>
+              <a href="#/10/4">0.45</a>
+            </td>
+          </tr>
+          <tr>
+            <td>FDP</td>
+            <td>
+              <a href="#/14/3">-0.27</a>
+            </td>
+            <td>
+              <a href="#/12/3">-0.29</a>
+            </td>
+            <td>
+              <a href="#/10/3">-0.17</a>
+            </td>
+          </tr>
+          <tr>
+            <td>Linke</td>
+            <td>
+              <a href="#/14/5">-0.10</a>
+            </td>
+            <td>
+              <a href="#/12/5">-0.22</a>
+            </td>
+            <td>
+              <a href="#/10/5">-0.39</a>
+            </td>
+          </tr>
+          <tr>
+            <td>AfD</td>
+            <td>
+              <a href="#/14/1">0.84</a>
+            </td>
+            <td>
+              <a href="#/12/1">0.82</a>
+            </td>
+            <td>
+              <a href="#/10/1">0.81</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </section>,
   ];
 }
