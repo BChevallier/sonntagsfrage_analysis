@@ -1,4 +1,6 @@
 import JSX from "docs/jsx.ts";
+import racing_average from "analysis/output/animations/racing_average_dark.mp4";
+import growing_average from "analysis/output/animations/sonntagsfrage_rolling_window_dark.mp4";
 
 export function section2() {
   return [
@@ -13,14 +15,14 @@ export function section2() {
     <section>
       <section>
         <video
-          data-src="analysis/output/animations/racing_average_dark.mp4"
+          data-src={racing_average}
           width="800"
           muted
         ></video>
       </section>
       <section>
         <video
-          data-src="analysis/output/animations/sonntagsfrage_rolling_window_dark.mp4"
+          data-src={growing_average}
           width="800"
           muted
           controls="controls"
