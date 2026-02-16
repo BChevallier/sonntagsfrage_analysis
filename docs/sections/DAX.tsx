@@ -13,7 +13,7 @@ export function sectionDAX() {
       <h2>Datensatz 5</h2>
       2000 - heute
       <br />
-      wöchentlicher Punktestand (n=1.362)
+      wöchentlicher DAX-Punktestand (n=1.362)
       <br />
       Quelle: investing.de
     </section>,
