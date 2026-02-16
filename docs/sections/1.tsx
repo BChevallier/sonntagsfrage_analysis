@@ -5,9 +5,11 @@ import Umfragezahl_pro_Wahl from "analysis/output/histograms/Umfrageanzahl_pro_W
 export function section1() {
   return [
     <section>
-      <h3>Umfrageinstitute, analysiert</h3>
+      <h3>Die Qual der Wahl</h3>
       <p>
-        <small>von Bastien Chevallier und Johannes Frohnmeyer</small>
+        <small>
+          Ausgewählte Einflussfaktoren der Umfragewerte deutscher Parteien
+        </small>
       </p>
     </section>,
     <section
