@@ -4,9 +4,9 @@ import seaborn as sns
 
 #only one should be true, I know there are more elegant ways...
 plot_institutes = False
-plot_parliaments = False
+plot_parliaments = True
 
-dark_mode = False
+dark_mode = True
 
 #reads the data and gets rid of irrelevant columns
 df = pd.read_csv("../data/dawum-full.csv")
@@ -46,7 +46,7 @@ ax.set_facecolor(bg_color)
 plt.yticks(color=ax_color)
 
 if plot_institutes:
-    sns.barplot(ax=ax,x=institute_counts_df.index, y=institute_counts_df.values, edgecolor="white",linewidth=0.5, )
+    sns.barplot(ax=ax,x=institute_counts_df.index, y=institute_counts_df.values, edgecolor=bg_color,linewidth=0.5, )
     ax.set_title(f"Umfrageanzahl pro Institut (n={institute_counts_df.sum()})",color=ax_color, fontsize=28)
     plt.xticks(rotation=45,ha='right',color=ax_color)
     plt.tight_layout()
@@ -54,7 +54,7 @@ if plot_institutes:
     ax.set_xlabel("Institut",color=ax_color)
     fig.savefig(f"../../output/histograms/Umfrageanzahl_pro_Institut_{file_ending}.svg")
 elif plot_parliaments:
-    sns.barplot(ax=ax, x=election_counts_df.index, y=election_counts_df.values, edgecolor="white", linewidth=0.5, )
+    sns.barplot(ax=ax, x=election_counts_df.index, y=election_counts_df.values, edgecolor=bg_color, linewidth=0.5, )
     ax.set_title(f"Umfrageanzahl pro Wahl (n={election_counts_df.sum()})", color=ax_color, fontsize=28)
     plt.xticks(rotation=45, ha='right',color=ax_color)
     plt.tight_layout()
