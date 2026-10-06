@@ -5,7 +5,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-from common import THEMES, corr_colormap, label_diagonal, mask_diagonal, output_path
+from common import THEMES, corr_colormap, corr_text, label_diagonal, mask_diagonal, output_path
 from survey_counts import load_dawum
 
 MIN_SURVEYS = 500  # parliaments with fewer surveys are skipped
@@ -37,7 +37,7 @@ def correlation_matrices(theme) -> None:
         for i in range(len(labels)):
             for j in range(len(labels)):
                 if i != j:
-                    ax.text(j, i, f"{corr.iloc[i, j]:.2f}", ha="center", va="center", color="white", fontsize=7)
+                    ax.text(j, i, corr_text(corr.iloc[i, j]), ha="center", va="center", color="white", fontsize=7)
         ax.set_title(f"Sonntagsfrage correlation matrix\n{pid.capitalize()}, 2017-2026 (n={len(df_p)})", color=theme.fg)
     if image is not None:
         cbar = fig.colorbar(image, ax=axes.tolist(), fraction=0.02, pad=0.1)

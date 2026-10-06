@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.animation import FFMpegWriter, FuncAnimation
 
-from common import (PARTIES, PARTY_NAMES, THEMES, corr_colormap, label_diagonal, load_average, mask_diagonal,
+from common import (PARTIES, PARTY_NAMES, THEMES, corr_colormap, corr_text, label_diagonal, load_average, mask_diagonal,
                     output_path)
 
 JUMP_DAYS = 5  # days between two frames
@@ -44,7 +44,7 @@ def render(df: pd.DataFrame, theme) -> None:
         image.set_data(mask_diagonal(matrix))
         title.set_text(dates[frame].strftime("%m-%Y"))
         for (i, j), text in texts.items():
-            text.set_text(f"{matrix[i, j]:.2f}")
+            text.set_text(corr_text(matrix[i, j]))
             # readable on both the saturated colours and the neutral centre of the colour map
             text.set_color("white" if abs(matrix[i, j]) > 0.5 or theme.name == "dark" else "black")
         return [image, title] + list(texts.values())

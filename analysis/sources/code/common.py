@@ -111,19 +111,24 @@ def gif_from_mp4(mp4: Path, width: int = 640, fps: int = 15) -> Path:
 
 
 def corr_colormap(theme: Theme):
-    """coolwarm, with masked cells (the diagonal, missing data) drawn in a neutral grey."""
+    """coolwarm, with masked cells (the diagonal, missing data) drawn in the background colour."""
     cmap = plt.get_cmap("coolwarm").copy()
-    cmap.set_bad("#333333" if theme.name == "dark" else "#dddddd")
+    cmap.set_bad(theme.bg)
     return cmap
 
 
 def mask_diagonal(matrix) -> "np.ma.MaskedArray":
-    """Correlation matrix with the (always 1) diagonal and NaNs masked, so they get the neutral colour."""
+    """Correlation matrix with the (always 1) diagonal and NaNs masked, so they get the background colour."""
     import numpy as np
 
     masked = np.ma.masked_invalid(np.asarray(matrix, dtype=float))
     masked[np.diag_indices(masked.shape[0])] = np.ma.masked
     return masked
+
+
+def corr_text(value: float) -> str:
+    """Cell annotation; empty for missing data (e.g. AfD before 2013)."""
+    return "" if value != value else f"{value:.2f}"  # NaN != NaN
 
 
 def label_diagonal(ax, labels: list[str], theme: Theme, fontsize: int = 8) -> None:
