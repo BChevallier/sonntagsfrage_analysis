@@ -5,12 +5,14 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-from common import THEMES, output_path
+from common import THEMES, corr_colormap, label_diagonal, mask_diagonal, output_path
 from survey_counts import load_dawum
 
 MIN_SURVEYS = 500  # parliaments with fewer surveys are skipped
 MIN_NON_NULL = 0.1  # result columns that are mostly empty (tiny parties) are dropped
 META_COLUMNS = ["survey_date", "survey_persons", "parliament_id", "institute_id"]
+DAWUM_PARTY_NAMES = {"cdu-csu": "CDU/CSU", "spd": "SPD", "gruene": "Greens", "fdp": "FDP", "linke": "Left",
+                     "afd": "AfD", "bsw": "BSW", "sonstige": "Others"}
 
 
 def correlation_matrices(theme) -> None:
@@ -29,13 +31,14 @@ def correlation_matrices(theme) -> None:
         sparse = [c for c in result_cols if df_p[c].notna().mean() < MIN_NON_NULL]
         corr = df_p.drop(columns=sparse + META_COLUMNS, errors="ignore").corr(numeric_only=True)
         labels = [name.replace("result_", "") for name in corr.columns]
-        image = ax.imshow(corr, cmap="coolwarm", vmin=-1, vmax=1)
-        ax.set_xticks(np.arange(len(labels)), labels, rotation=45, ha="right", fontsize=8, color=theme.fg)
-        ax.set_yticks(np.arange(len(labels)), labels, fontsize=8, color=theme.fg)
+        labels = [DAWUM_PARTY_NAMES.get(label, label) for label in labels]
+        image = ax.imshow(mask_diagonal(corr.values), cmap=corr_colormap(theme), vmin=-1, vmax=1)
+        label_diagonal(ax, labels, theme, fontsize=7)
         for i in range(len(labels)):
             for j in range(len(labels)):
-                ax.text(j, i, f"{corr.iloc[i, j]:.2f}", ha="center", va="center", color="white", fontsize=7)
-        ax.set_title(f"Correlation matrix of the Sonntagsfrage, {pid} (2017-2026; n={len(df_p)})", color=theme.fg)
+                if i != j:
+                    ax.text(j, i, f"{corr.iloc[i, j]:.2f}", ha="center", va="center", color="white", fontsize=7)
+        ax.set_title(f"Sonntagsfrage correlation matrix\n{pid.capitalize()}, 2017-2026 (n={len(df_p)})", color=theme.fg)
     if image is not None:
         cbar = fig.colorbar(image, ax=axes.tolist(), fraction=0.02, pad=0.1)
         cbar.ax.tick_params(colors=theme.fg)

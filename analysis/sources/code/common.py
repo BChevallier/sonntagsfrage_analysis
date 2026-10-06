@@ -108,3 +108,29 @@ def gif_from_mp4(mp4: Path, width: int = 640, fps: int = 15) -> Path:
     palette_filter = f"fps={fps},scale={width}:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse"
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(mp4), "-vf", palette_filter, str(gif)], check=True)
     return gif
+
+
+def corr_colormap(theme: Theme):
+    """coolwarm, with masked cells (the diagonal, missing data) drawn in a neutral grey."""
+    cmap = plt.get_cmap("coolwarm").copy()
+    cmap.set_bad("#333333" if theme.name == "dark" else "#dddddd")
+    return cmap
+
+
+def mask_diagonal(matrix) -> "np.ma.MaskedArray":
+    """Correlation matrix with the (always 1) diagonal and NaNs masked, so they get the neutral colour."""
+    import numpy as np
+
+    masked = np.ma.masked_invalid(np.asarray(matrix, dtype=float))
+    masked[np.diag_indices(masked.shape[0])] = np.ma.masked
+    return masked
+
+
+def label_diagonal(ax, labels: list[str], theme: Theme, fontsize: int = 8) -> None:
+    """Write the variable names on the diagonal instead of on the axes."""
+    for i, label in enumerate(labels):
+        ax.text(i, i, label, ha="center", va="center", color=theme.fg, fontsize=fontsize, fontweight="bold")
+    ax.set_xticks([])
+    ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
