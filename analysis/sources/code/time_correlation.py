@@ -1,120 +1,62 @@
+"""Animated correlation matrix between the parties' 30-day poll averages, window moving through time.
+
+Each frame shows the Pearson correlation of the parties' averages within a short window centred
+on one date. Note: with a window this short the values are noisy; the animation is for
+intuition, not for estimates.
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.animation import FuncAnimation, FFMpegWriter
 import pandas as pd
+from matplotlib.animation import FFMpegWriter, FuncAnimation
 
-df=pd.read_csv("../../output/survey_averages/30D_survey_averages.csv", parse_dates=["date"])
-df.set_index("date", inplace=True)
+from common import PARTIES, PARTY_NAMES, THEMES, load_average, output_path
 
-# define dark_mode locally (do not import the same name)
-dark_mode = True
-jump_size= 5 #in days
-windowsize = 365*4 #size of the considered time_frame for the correlation
-
-if dark_mode:
-    bg_color = "black"
-    ax_color = "white"
-    file_ending = "dark"
-else:
-    bg_color = "white"
-    ax_color = "black"
-    file_ending = "light"
-
-def get_corr_matrix(df, date, window):
-    min_date = date - pd.Timedelta(days=window // 2)
-    max_date = date + pd.Timedelta(days=window // 2)
-    filtered_df = df.loc[min_date:max_date]
-    return filtered_df.corr(method='pearson')
-
-print(df)
-dates=df.index.tolist()[::jump_size]
-
-fig, ax = plt.subplots(facecolor=bg_color)
-ax.set_facecolor(bg_color)
-title = ax.set_title(dates[0],color=ax_color)
-
-starting_corr=get_corr_matrix(df, dates[0], windowsize)
-im = ax.imshow(
-    starting_corr.values,
-    cmap="coolwarm",
-    vmin=-1,
-    vmax=1,
-    interpolation="none",
-)
-plt.colorbar(im)
-
-labels = starting_corr.columns
-ax.set_xticks(np.arange(len(labels)))
-ax.set_yticks(np.arange(len(labels)))
-ax.set_xticklabels(labels, rotation=45, color=ax_color)
-ax.set_yticklabels(labels, color=ax_color)
-
-# Create text annotations for each cell so we can update them in the animation
-nrows, ncols = starting_corr.shape
-texts = []
-for i in range(nrows):
-    row_texts = []
-    for j in range(ncols):
-        txt = ax.text(
-            j,
-            i,
-            f"{starting_corr.values[i, j]:.2f}",
-            ha='center',
-            va='center',
-            color=ax_color,
-            fontsize=8,
-        )
-        row_texts.append(txt)
-    texts.append(row_texts)
-
-plt.tight_layout()
-
-def init():
-    # return all artists that will be animated
-    artists = [im, title]
-    for row in texts:
-        artists.extend(row)
-    return artists
-
-def update(i):
-    date=dates[i]
-    corr_matrix = get_corr_matrix(df,date, 30)
-    im.set_data(corr_matrix.values)
-    title.set_text(date.strftime("%m-%Y"))
-
-    # update text annotations
-    for r in range(nrows):
-        for c in range(ncols):
-            val = corr_matrix.values[r, c]
-            texts[r][c].set_text(f"{val:.2f}")
-            # pick contrasting text color for readability
-            text_color = 'white' if abs(val) > 0.5 else 'black'
-            # ensure text is visible against the figure background too
-            if bg_color == 'black' and text_color == 'black':
-                text_color = 'white'
-            if bg_color == 'white' and text_color == 'white':
-                text_color = 'black'
-            texts[r][c].set_color(text_color)
-
-    artists = [im, title]
-    for row in texts:
-        artists.extend(row)
-    return artists
-
-writer = FFMpegWriter(
-    fps=20,
-    metadata=dict(artist="you"),
-    bitrate=1800,
-)
-
-print("Saving animation ...")
-
-ani = FuncAnimation(fig, update, frames=len(df.index.tolist())//jump_size, init_func=init,
-                    interval=100, blit=False, repeat=False)
-
-ani.save(
-    f"../../output/animations/time_correlation_{file_ending}.mp4",
-    writer=writer)
+JUMP_DAYS = 5  # days between two frames
+CORR_WINDOW_DAYS = 30  # width of the window the correlation is computed on
 
 
-plt.show()
+def corr_matrix(df: pd.DataFrame, date: pd.Timestamp) -> pd.DataFrame:
+    half = pd.Timedelta(days=CORR_WINDOW_DAYS // 2)
+    return df.loc[date - half: date + half].corr(method="pearson")
+
+
+def render(df: pd.DataFrame, theme) -> None:
+    dates = df.index.tolist()[::JUMP_DAYS]
+    first = corr_matrix(df, dates[0])
+    labels = [PARTY_NAMES[c] for c in first.columns]
+    n = len(labels)
+
+    fig, ax = plt.subplots(facecolor=theme.bg)
+    ax.set_facecolor(theme.bg)
+    title = ax.set_title(dates[0].strftime("%m-%Y"), color=theme.fg)
+    image = ax.imshow(first.values, cmap="coolwarm", vmin=-1, vmax=1, interpolation="none")
+    cbar = plt.colorbar(image)
+    cbar.ax.tick_params(colors=theme.fg)
+    ax.set_xticks(np.arange(n), labels, rotation=45, color=theme.fg)
+    ax.set_yticks(np.arange(n), labels, color=theme.fg)
+    texts = [[ax.text(j, i, "", ha="center", va="center", fontsize=8) for j in range(n)] for i in range(n)]
+    plt.tight_layout()
+
+    def update(frame):
+        matrix = corr_matrix(df, dates[frame]).values
+        image.set_data(matrix)
+        title.set_text(dates[frame].strftime("%m-%Y"))
+        for i in range(n):
+            for j in range(n):
+                texts[i][j].set_text(f"{matrix[i, j]:.2f}")
+                # readable on both the saturated colours and the neutral centre of the colour map
+                texts[i][j].set_color("white" if abs(matrix[i, j]) > 0.5 or theme.name == "dark" else "black")
+        return [image, title] + [t for row in texts for t in row]
+
+    ani = FuncAnimation(fig, update, frames=len(dates), interval=100, blit=False, repeat=False)
+    mp4 = output_path("animations", f"time_correlation_{theme.name}.mp4")
+    ani.save(mp4, writer=FFMpegWriter(fps=20, bitrate=1800))
+    plt.close(fig)
+    print(f"Saved {mp4}")
+
+
+if __name__ == "__main__":
+    averages = load_average(30)[list(PARTIES)]
+    for theme in THEMES:
+        render(averages, theme)

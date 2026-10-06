@@ -2,29 +2,258 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-
-    <title>Umfrageinstitute, analysiert</title>
-
-    <meta
-      name="description"
-      content="A framework for easily creating beautiful presentations using HTML"
-    />
-    <meta name="author" content="Bastien Chevallier und Johannes Frohnmeyer" />
-
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
-
+    <title>Spoilt for Choice: German poll numbers, analysed</title>
+    <meta name="description" content="Selected factors influencing the poll numbers of German parties (Sonntagsfrage)." />
+    <meta name="author" content="Bastien Chevallier and Johannes Frohnmeyer" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <script type="module" src="/docs/main.ts"></script>
+    <!-- reveal.js loaded from a CDN (pinned version); no build step needed -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/reset.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/reveal.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/theme/black.css" />
+    <style>
+      :root { --r-background-color: black; }
+      .reveal blockquote { background: rgba(255, 255, 255, 0.1); }
+      .reveal table { margin: 0 auto; font-size: 0.8em; }
+      .reveal th, .reveal td { padding: 0.3em 0.9em; }
+      .reveal td { text-align: right; }
+      .reveal td:first-child { text-align: left; }
+      .reveal video { max-height: 80vh; }
+      .reveal .side-by-side { display: flex; gap: 1rem; justify-content: center; align-items: center; }
+      .reveal .side-by-side img { max-width: 48%; height: auto; }
+    </style>
   </head>
 
   <body>
     <div class="reveal">
-      <!-- The slides are injected from JS -->
+      <div class="slides">
+      <section>
+        <h3>Spoilt for Choice</h3>
+        <p><small>Selected factors influencing the poll numbers of German parties</small></p>
+        <p><small>Bastien Chevallier &amp; Johannes Frohnmeyer</small></p>
+        <aside class="notes">
+          This presentation was created during a 1.5-day hackathon at KIT. It looks at political polling data, searches for biases by polling institute and for the influence of economic indicators (or so we intended).
+        </aside>
+      </section>
+      <section>
+        <blockquote>
+          &ldquo;If the federal election were held next Sunday, which of the following parties would you vote for?&rdquo;
+          <br /><small>(&ldquo;Sonntagsfrage&rdquo;)</small>
+        </blockquote>
+        <aside class="notes">
+          The classic question most pollsters ask, called the Sonntagsfrage (&ldquo;Sunday question&rdquo;).
+        </aside>
+      </section>
+      <section>
+        <h2>Dataset 1</h2>
+        2017 &ndash; today<br />
+        Number of surveys: 3,700<br />
+        Source: <a href="https://dawum.de">dawum.de</a>
+        <aside class="notes">
+          Originally we wanted to use this source.
+        </aside>
+      </section>
+      <section>
+        <div class="side-by-side">
+          <img src="analysis/output/histograms/surveys_per_institute_dark.svg" alt="Number of surveys per institute" />
+          <img src="analysis/output/histograms/surveys_per_parliament_dark.svg" alt="Number of surveys per election" />
+        </div>
+        <aside class="notes">
+          About a third of these surveys are for state or European elections, and the data only starts in 2017. We didn&rsquo;t want to mix non-national elections into our later correlation analysis, so we looked for a better option.
+        </aside>
+      </section>
+      <section>
+        <h2>Dataset 2</h2>
+        2002 &ndash; today<br />
+        Number of polls: 5,079 (Bundestag)<br />
+        Source: <a href="https://www.wahlrecht.de/umfragen/">wahlrecht.de</a>
+        <aside class="notes">
+          Our main dataset: it covers a long period, many polling institutes, and only national polls.
+        </aside>
+      </section>
+      <section>
+        <section>
+          <video data-src="analysis/output/animations/racing_average_dark.mp4" muted></video>
+          <aside class="notes">
+            Pretty animation :)
+          </aside>
+        </section>
+        <section>
+          <video data-src="analysis/output/animations/sonntagsfrage_rolling_window_dark.mp4" muted controls></video>
+          <aside class="notes">
+            Just a reminder of how much the window size matters when using rolling averages. The window grows from 5 days to almost 14 years. I can&rsquo;t think of a situation where a rolling average is adequate preprocessing.
+          </aside>
+        </section>
+      </section>
+      <section>
+        <section>
+          <video data-src="analysis/output/animations/time_correlation_dark.mp4" muted controls></video>
+          <aside class="notes">
+            Correlation between the parties&rsquo; 30-day averages, computed in a 30-day window moving through time. We thought governing parties might correlate. They don&rsquo;t. Looking for meaning in how the correlations change over time feels like reading tea leaves. Let&rsquo;s not do that, or we might convince ourselves we found something reasonable.
+          </aside>
+        </section>
+      </section>
+      <section>
+        <section>
+          <h3>Do institutes differ?</h3>
+          <p><small>Deviation of each institute&rsquo;s polls from the 30-day average of all polls.<br />
+          A mean away from zero hints at a &ldquo;house effect&rdquo;.</small></p>
+          <aside class="notes">
+            This method kind of sucks, since a bias shared by all institutes won&rsquo;t show up. On top of that, institutes that poll a lot (Forsa, Verian, INSA) shift the baseline for everyone, and each institute is compared with an average that includes its own polls. Still interesting though.
+          </aside>
+        </section>
+        <section>
+          <img class="r-stretch" src="analysis/output/survey_deviations/allensbach_dark.svg" alt="House effect of Allensbach" />
+        </section>
+        <section>
+          <img class="r-stretch" src="analysis/output/survey_deviations/forsa_dark.svg" alt="House effect of Forsa" />
+        </section>
+        <section>
+          <img class="r-stretch" src="analysis/output/survey_deviations/forschungsgruppe_wahlen_dark.svg" alt="House effect of Forschungsgruppe Wahlen" />
+        </section>
+        <section>
+          <img class="r-stretch" src="analysis/output/survey_deviations/gms_dark.svg" alt="House effect of GMS" />
+        </section>
+        <section>
+          <img class="r-stretch" src="analysis/output/survey_deviations/infratest_dimap_dark.svg" alt="House effect of Infratest dimap" />
+        </section>
+        <section>
+          <img class="r-stretch" src="analysis/output/survey_deviations/insa_dark.svg" alt="House effect of INSA" />
+        </section>
+        <section>
+          <img class="r-stretch" src="analysis/output/survey_deviations/verian_dark.svg" alt="House effect of Verian (Emnid)" />
+        </section>
+        <section>
+          <img class="r-stretch" src="analysis/output/survey_deviations/yougov_dark.svg" alt="House effect of YouGov" />
+        </section>
+      </section>
+      <section>
+        <h3>Poll average vs. economy</h3>
+        <table>
+          <thead><tr><th></th><th>DAX (n=1,256)</th><th>CPI (n=287)</th><th>GDP (n=23)</th></tr></thead>
+          <tbody>
+            <tr><td>CDU/CSU</td><td><a href="#/dax-cdu-csu">-0.69</a></td><td><a href="#/cpi-cdu-csu">-0.71</a></td><td><a href="#/gdp-cdu-csu">-0.69</a></td></tr>
+            <tr><td>SPD</td><td><a href="#/dax-spd">-0.77</a></td><td><a href="#/cpi-spd">-0.79</a></td><td><a href="#/gdp-spd">-0.76</a></td></tr>
+            <tr><td>Greens</td><td><a href="#/dax-greens"><span style="visibility:hidden">-</span>0.28</a></td><td><a href="#/cpi-greens"><span style="visibility:hidden">-</span>0.38</a></td><td><a href="#/gdp-greens"><span style="visibility:hidden">-</span>0.46</a></td></tr>
+            <tr><td>FDP</td><td><a href="#/dax-fdp">-0.27</a></td><td><a href="#/cpi-fdp">-0.29</a></td><td><a href="#/gdp-fdp">-0.17</a></td></tr>
+            <tr><td>Left</td><td><a href="#/dax-left">-0.10</a></td><td><a href="#/cpi-left">-0.22</a></td><td><a href="#/gdp-left">-0.39</a></td></tr>
+            <tr><td>AfD</td><td><a href="#/dax-afd"><span style="visibility:hidden">-</span>0.84</a></td><td><a href="#/cpi-afd"><span style="visibility:hidden">-</span>0.82</a></td><td><a href="#/gdp-afd"><span style="visibility:hidden">-</span>0.81</a></td></tr>
+          </tbody>
+        </table>
+        <p><small>Pearson r with the 30-day poll average; click a value for its scatter plot.<br />
+        Both series trend over time, so this is not evidence of causation.</small></p>
+        <aside class="notes">
+          GDP has only 23 data points, and the other indicators have a lot of points that basically only rise. We could have taken any other data source with a fairly constant upward trend and shown a big correlation with the AfD (positive) or the CDU/CSU and SPD (negative). Of course we didn&rsquo;t know that when we started the analysis. You&rsquo;re always smarter afterwards.
+        </aside>
+      </section>
+      <section>
+        <section>
+          <h2>Dataset 3</h2>
+          2000 – 2025<br />
+          yearly gross domestic product (n=26)<br />
+          Source: <a href="https://www.destatis.de">destatis.de</a>
+        </section>
+        <section>
+          <img class="r-stretch" src="analysis/output/line_plots/GDP_over_time_dark.svg" alt="GDP over time" />
+        </section>
+        <section id="gdp-cdu-csu">
+          <img class="r-stretch" src="analysis/output/correlations/CDU_CSU_vs_GDP_dark.svg" alt="CDU/CSU vs GDP" />
+        </section>
+        <section id="gdp-spd">
+          <img class="r-stretch" src="analysis/output/correlations/SPD_vs_GDP_dark.svg" alt="SPD vs GDP" />
+        </section>
+        <section id="gdp-greens">
+          <img class="r-stretch" src="analysis/output/correlations/GRÜNE_vs_GDP_dark.svg" alt="Greens vs GDP" />
+        </section>
+        <section id="gdp-fdp">
+          <img class="r-stretch" src="analysis/output/correlations/FDP_vs_GDP_dark.svg" alt="FDP vs GDP" />
+        </section>
+        <section id="gdp-left">
+          <img class="r-stretch" src="analysis/output/correlations/LINKE_vs_GDP_dark.svg" alt="Left vs GDP" />
+        </section>
+        <section id="gdp-afd">
+          <img class="r-stretch" src="analysis/output/correlations/AfD_vs_GDP_dark.svg" alt="AfD vs GDP" />
+        </section>
+      </section>
+      <section>
+        <section>
+          <h2>Dataset 4</h2>
+          2000 – today<br />
+          monthly consumer price index (n=312)<br />
+          Source: <a href="https://www.destatis.de">destatis.de</a>
+        </section>
+        <section>
+          <img class="r-stretch" src="analysis/output/line_plots/CPI_over_time_dark.svg" alt="CPI over time" />
+        </section>
+        <section id="cpi-cdu-csu">
+          <img class="r-stretch" src="analysis/output/correlations/CDU_CSU_vs_CPI_dark.svg" alt="CDU/CSU vs CPI" />
+        </section>
+        <section id="cpi-spd">
+          <img class="r-stretch" src="analysis/output/correlations/SPD_vs_CPI_dark.svg" alt="SPD vs CPI" />
+        </section>
+        <section id="cpi-greens">
+          <img class="r-stretch" src="analysis/output/correlations/GRÜNE_vs_CPI_dark.svg" alt="Greens vs CPI" />
+        </section>
+        <section id="cpi-fdp">
+          <img class="r-stretch" src="analysis/output/correlations/FDP_vs_CPI_dark.svg" alt="FDP vs CPI" />
+        </section>
+        <section id="cpi-left">
+          <img class="r-stretch" src="analysis/output/correlations/LINKE_vs_CPI_dark.svg" alt="Left vs CPI" />
+        </section>
+        <section id="cpi-afd">
+          <img class="r-stretch" src="analysis/output/correlations/AfD_vs_CPI_dark.svg" alt="AfD vs CPI" />
+        </section>
+      </section>
+      <section>
+        <section>
+          <h2>Dataset 5</h2>
+          2000 – today<br />
+          weekly DAX opening value (n=1,361)<br />
+          Source: <a href="https://www.investing.com">investing.com</a>
+        </section>
+        <section>
+          <img class="r-stretch" src="analysis/output/line_plots/DAX_over_time_dark.svg" alt="DAX over time" />
+        </section>
+        <section id="dax-cdu-csu">
+          <img class="r-stretch" src="analysis/output/correlations/CDU_CSU_vs_DAX_dark.svg" alt="CDU/CSU vs DAX" />
+        </section>
+        <section id="dax-spd">
+          <img class="r-stretch" src="analysis/output/correlations/SPD_vs_DAX_dark.svg" alt="SPD vs DAX" />
+        </section>
+        <section id="dax-greens">
+          <img class="r-stretch" src="analysis/output/correlations/GRÜNE_vs_DAX_dark.svg" alt="Greens vs DAX" />
+        </section>
+        <section id="dax-fdp">
+          <img class="r-stretch" src="analysis/output/correlations/FDP_vs_DAX_dark.svg" alt="FDP vs DAX" />
+        </section>
+        <section id="dax-left">
+          <img class="r-stretch" src="analysis/output/correlations/LINKE_vs_DAX_dark.svg" alt="Left vs DAX" />
+        </section>
+        <section id="dax-afd">
+          <img class="r-stretch" src="analysis/output/correlations/AfD_vs_DAX_dark.svg" alt="AfD vs DAX" />
+        </section>
+      </section>
+      <section>
+        <h3>Inspiration</h3>
+        <p><a href="https://www.dkriesel.com">dkriesel.com</a></p>
+        <aside class="notes">
+          David Kriesel&rsquo;s talk at the CCC was the inspiration for this project. He seems pretty cool. Check out his blog: <a href="https://www.dkriesel.com">dkriesel.com</a>
+        </aside>
+      </section>
+      </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+    <script>
+      Reveal.initialize({
+        plugins: [RevealNotes],
+        slideNumber: true,
+        hash: true,
+        center: true,
+        autoPlayMedia: true,
+        transitionSpeed: "fast",
+      });
+    </script>
   </body>
 </html>

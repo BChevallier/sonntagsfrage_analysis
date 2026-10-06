@@ -1,105 +1,63 @@
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation, FFMpegWriter
+"""Rolling averages of the polls over windows of 5, 10, ... 5000 days.
+
+Writes one CSV per window length to output/survey_averages/ (the 30-day one is used by most
+other scripts) and an animation in which the window grows from 5 days to ~14 years.
+
+Method: all polls of a day are averaged per party, days without a poll are NaN, then a trailing
+rolling mean over `N` calendar days is taken (NaN days are skipped).
+"""
+
 import pandas as pd
-import seaborn as sns
+from matplotlib.animation import FFMpegWriter, FuncAnimation
 
-window_size = 5 #in days
-frame_number = 1000
-dark_mode = True
+from common import PARTIES, PARTY_NAMES, THEMES, gif_from_mp4, load_polls, output_path, style_axes
 
-PATH="../data/umfragen_wahlrecht.csv"
-df = pd.read_csv(PATH, parse_dates=['date'])
-df.set_index("date", inplace=True)
+WINDOW_STEP = 5  # days; window i has length WINDOW_STEP * i
+N_WINDOWS = 1000
 
-plot_elections=False
-parties = {
-    'CDU/CSU': 'black',
-    'SPD': 'red',
-    'GRÜNE': 'green',
-    'FDP': 'yellow',
-    'LINKE': 'purple',
-    'AfD': 'blue',
-    #'FW': 'orange',
-    #'BSW': 'brown',
-    #'Sonstige': 'gray',
-    #'PIRATEN': '#F97F02'  # Pirate Party orange
-}
-bundestag_dates = [
-    '2002-09-22',
-    '2005-09-18',  # Early election
-    '2009-09-27',
-    '2013-09-22',
-    '2017-09-24',
-    '2021-09-26',
-    '2025-02-23'   # Early election after dissolution
-]
-computed_dfs = []
 
-# sets the graphic styles
-if dark_mode:
-    bg_color = "black"
-    ax_color = "white"
-    file_ending = "dark"
-else:
-    bg_color = "white"
-    ax_color = "black"
-    file_ending = "light"
+def compute_averages(polls: pd.DataFrame) -> list[pd.DataFrame]:
+    daily = {}
+    for party in PARTIES:
+        daily[party] = pd.to_numeric(polls[party], errors="coerce").resample("D").mean()
+    averages = []
+    for i in range(1, N_WINDOWS + 1):
+        window = f"{WINDOW_STEP * i}D"
+        df = pd.DataFrame({party: series.rolling(window).mean() for party, series in daily.items()})
+        df.index.name = "date"
+        df.to_csv(output_path("survey_averages", f"{WINDOW_STEP * i}D_survey_averages.csv"))
+        averages.append(df)
+    print(f"Computed {len(averages)} rolling averages")
+    return averages
 
-for i in range(1,frame_number+1):
-    averages_df = pd.DataFrame()
-    for party in parties:
-        temp_df = df.copy()
-        temp_df[party]=pd.to_numeric(temp_df[party], errors='coerce')
-        temp_df = temp_df.resample('D').agg({party: 'mean'})
-        averages_df[party] = temp_df[party].rolling(f"{window_size*i}D").mean()
-        print(f"{window_size*i}-day rolling average for {party} created")
-    averages_df.to_csv(f"../../output/survey_averages/{window_size*i}D_survey_averages.csv",)
-    computed_dfs.append(averages_df)
 
-fig, ax = plt.subplots(facecolor=bg_color)
-ax.set_facecolor(bg_color)
-for spine in ax.spines.values():
-    spine.set_color(ax_color)
-ax.set_xlim(averages_df.index.min(), averages_df.index.max())
-ax.set_ylim(0,55)
-ax.tick_params(axis='x', colors=ax_color)
-ax.tick_params(axis='y', colors=ax_color)
-lines = [ax.plot([], [], color=color, label=party)[0] for party, color in parties.items()]
-title = ax.set_title("", color=ax_color)
-sns.despine(ax=ax)
-ax.xaxis.label.set_color(ax_color)
-ax.yaxis.label.set_color(ax_color)
-if dark_mode: lines[0].set_color("white")
+def render_animation(averages: list[pd.DataFrame], theme) -> None:
+    import matplotlib.pyplot as plt
 
-def init():
-    for line in lines:
-        line.set_data([], [])  # Or np.ma.array(x, mask=True) for lines
-    return lines+[title]
+    fig, ax = plt.subplots(facecolor=theme.bg)
+    style_axes(ax, theme)
+    ax.set_xlim(averages[-1].index.min(), averages[-1].index.max())
+    ax.set_ylim(0, 55)
+    ax.set_ylabel("Vote share (%)", color=theme.fg)
+    lines = [ax.plot([], [], color=theme.party_color(p), label=PARTY_NAMES[p])[0] for p in PARTIES]
+    title = ax.set_title("", color=theme.fg)
+    ax.legend(facecolor=theme.bg, labelcolor=theme.fg, edgecolor=theme.fg)
 
-def animate(i):
-    for count, line in enumerate(lines):
-        values = computed_dfs[i][list(parties.keys())[count]]
-        line.set_data(computed_dfs[i].index, values)
-    title.set_text(f"Sonntagsfrage ({i*window_size}-Tage gleitendes Fenster)")
-    return lines+[title]
+    def update(i):
+        for line, party in zip(lines, PARTIES):
+            line.set_data(averages[i].index, averages[i][party])
+        title.set_text(f"Sonntagsfrage - {WINDOW_STEP * (i + 1)}-day rolling window")
+        return lines + [title]
 
-ax.legend()
-ani = FuncAnimation(fig, animate, frames=len(computed_dfs), init_func=init,
-                    interval=100, blit=True, repeat=False)
+    ani = FuncAnimation(fig, update, frames=len(averages), interval=100, blit=True, repeat=False)
+    mp4 = output_path("animations", f"sonntagsfrage_rolling_window_{theme.name}.mp4")
+    ani.save(mp4, writer=FFMpegWriter(fps=60, bitrate=3600))
+    gif_from_mp4(mp4)
+    plt.close(fig)
+    print(f"Saved {mp4}")
 
-if plot_elections:
-    for date in bundestag_dates:
-        plt.axvline(x=date, color="lightgrey", linestyle="dashed")
 
-writer = FFMpegWriter(
-    fps=60,
-    metadata=dict(artist="you"),
-    bitrate=3600,
-)
-
-ani.save(
-    f"../../output/animations/sonntagsfrage_rolling_window_{file_ending}.mp4",
-    writer=writer
-)
-
-plt.show()
+if __name__ == "__main__":
+    averages = compute_averages(load_polls())
+    for theme in THEMES:
+        render_animation(averages, theme)

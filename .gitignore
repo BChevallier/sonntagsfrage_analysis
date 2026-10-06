@@ -1,3 +1,9 @@
 /.idea
 /dist
 /node_modules
+# Local context (never commit)
+CLAUDE.md
+changelog.md
+.venv/
+__pycache__/
+.DS_Store
