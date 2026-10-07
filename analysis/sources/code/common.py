@@ -60,6 +60,30 @@ class Theme:
         color = PARTIES[party][1]
         return self.fg if (color == "black" and self.name == "dark") else color
 
+    def scatter_color(self, party: str) -> str:
+        """Party colour for small scatter dots: on dark, dark colours (AfD blue, Left purple, Greens green)
+        are blended towards white until they have a WCAG contrast >= 4.5 against the background."""
+        color = self.party_color(party)
+        if self.name != "dark":
+            return color
+        from matplotlib.colors import to_hex, to_rgb
+
+        rgb = to_rgb(color)
+        for _ in range(20):
+            if _contrast(rgb, to_rgb(self.bg)) >= 4.5:
+                break
+            rgb = tuple(c + 0.15 * (1 - c) for c in rgb)
+        return to_hex(rgb)
+
+
+def _contrast(a: tuple, b: tuple) -> float:
+    """WCAG contrast ratio of two RGB colours (components in 0..1)."""
+    def lum(rgb):
+        lin = [c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4 for c in rgb]
+        return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2]
+    hi, lo = sorted((lum(a), lum(b)), reverse=True)
+    return (hi + 0.05) / (lo + 0.05)
+
 
 THEMES = [Theme("dark", "black", "white"), Theme("light", "white", "black")]
 

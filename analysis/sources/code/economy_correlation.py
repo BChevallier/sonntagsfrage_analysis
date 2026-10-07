@@ -37,7 +37,7 @@ def load_gdp() -> pd.Series:
 
 
 INDICATORS = {
-    # key: (loader, display name, y label, file slug)
+    # key: (loader, display name, axis label, file slug)
     "DAX": (load_dax, "DAX", "DAX points", "DAX"),
     "CPI": (load_cpi, "CPI", "Consumer price index (2020=100)", "CPI"),
     "GDP": (load_gdp, "GDP", "Gross domestic product (billion EUR)", "GDP"),
@@ -55,14 +55,17 @@ def plot_indicator(series: pd.Series, name: str, ylabel: str, slug: str, theme) 
 
 
 def plot_party(combined: pd.DataFrame, party: str, r: float, name: str, ylabel: str, slug: str, theme) -> None:
+    """Scatter of the indicator (x) against the party's poll average (y) with a regression line."""
     fig, ax = plt.subplots(facecolor=theme.bg)
     style_axes(ax, theme, title=f"{PARTY_NAMES[party]} vs {name} (r={r:.2f})",
-               xlabel="Poll average (%)", ylabel=ylabel)
-    sns.regplot(data=combined, x=party, y=name, ax=ax,
-                scatter_kws={"color": theme.party_color(party), "alpha": 0.7, "s": 10},
-                line_kws={"color": "red", "alpha": 0.6, "linewidth": 2})
-    ax.set_xlabel("Poll average (%)", color=theme.fg)
-    ax.set_ylabel(ylabel, color=theme.fg)
+               xlabel=ylabel, ylabel="Poll average (%)")
+    dot_color = theme.scatter_color(party)
+    line_color = theme.fg if PARTIES[party][1] == "red" else "red"  # SPD dots are red themselves
+    sns.regplot(data=combined, x=name, y=party, ax=ax,
+                scatter_kws={"color": dot_color, "alpha": 0.7, "s": 10},
+                line_kws={"color": line_color, "alpha": 0.9, "linewidth": 2})
+    ax.set_xlabel(ylabel, color=theme.fg)
+    ax.set_ylabel("Poll average (%)", color=theme.fg)
     fig.savefig(output_path("correlations", f"{party.replace('/', '_')}_vs_{slug}_{theme.name}.svg"))
     plt.close(fig)
 
