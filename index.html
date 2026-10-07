@@ -19,8 +19,6 @@
       .reveal td { text-align: right; }
       .reveal td:first-child { text-align: left; }
       .reveal video { max-height: 80vh; }
-      .reveal .side-by-side { display: flex; gap: 1rem; justify-content: center; align-items: center; }
-      .reveal .side-by-side img { max-width: 48%; height: auto; }
     </style>
   </head>
 
@@ -28,7 +26,7 @@
     <div class="reveal">
       <div class="slides">
       <section>
-        <h3>Spoilt for Choice</h3>
+        <h2>Spoilt for Choice</h2>
         <p><small>Selected factors influencing the poll numbers of German parties</small></p>
         <p><small>Bastien Chevallier &amp; Johannes Frohnmeyer</small></p>
         <aside class="notes">
@@ -46,7 +44,7 @@
       </section>
       <section>
         <h2>Dataset 1</h2>
-        2017 &ndash; today<br />
+        2017 &ndash; Jan 2026<br />
         Number of surveys: 3,700<br />
         Source: <a href="https://dawum.de">dawum.de</a>
         <aside class="notes">
@@ -54,17 +52,14 @@
         </aside>
       </section>
       <section>
-        <div class="side-by-side">
-          <img src="analysis/output/histograms/surveys_per_institute_dark.svg" alt="Number of surveys per institute" />
-          <img src="analysis/output/histograms/surveys_per_parliament_dark.svg" alt="Number of surveys per election" />
-        </div>
+        <p>About &frac13; of the surveys are for state or European elections, and the data only starts in 2017.</p>
         <aside class="notes">
           About a third of these surveys are for state or European elections, and the data only starts in 2017. We didn&rsquo;t want to mix non-national elections into our later correlation analysis, so we looked for a better option.
         </aside>
       </section>
       <section>
         <h2>Dataset 2</h2>
-        2002 &ndash; today<br />
+        2002 &ndash; Jan 2026<br />
         Number of polls: 5,079 (Bundestag)<br />
         Source: <a href="https://www.wahlrecht.de/umfragen/">wahlrecht.de</a>
         <aside class="notes">
@@ -87,15 +82,7 @@
       </section>
       <section>
         <section>
-          <video data-src="analysis/output/animations/time_correlation_dark.mp4" muted controls></video>
-          <aside class="notes">
-            Correlation between the parties&rsquo; 30-day averages, computed in a 30-day window moving through time. We thought governing parties might correlate. They don&rsquo;t. Looking for meaning in how the correlations change over time feels like reading tea leaves. Let&rsquo;s not do that, or we might convince ourselves we found something reasonable.
-          </aside>
-        </section>
-      </section>
-      <section>
-        <section>
-          <h3>Do institutes differ?</h3>
+          <h2>Do institutes differ?</h2>
           <p><small>Deviation of each institute&rsquo;s polls from the 30-day average of all polls.<br />
           A mean away from zero hints at a &ldquo;house effect&rdquo;.</small></p>
           <aside class="notes">
@@ -128,7 +115,7 @@
         </section>
       </section>
       <section>
-        <h3>Poll average vs. economy</h3>
+        <h2>Poll average vs. economy</h2>
         <table>
           <thead><tr><th></th><th>DAX (n=1,256)</th><th>CPI (n=287)</th><th>GDP (n=23)</th></tr></thead>
           <tbody>
@@ -149,7 +136,7 @@
       <section>
         <section>
           <h2>Dataset 3</h2>
-          2000 – 2025<br />
+          2000 &ndash; 2025<br />
           yearly gross domestic product (n=26)<br />
           Source: <a href="https://www.destatis.de">destatis.de</a>
         </section>
@@ -178,7 +165,7 @@
       <section>
         <section>
           <h2>Dataset 4</h2>
-          2000 – today<br />
+          2000 &ndash; Dec 2025<br />
           monthly consumer price index (n=312)<br />
           Source: <a href="https://www.destatis.de">destatis.de</a>
         </section>
@@ -207,7 +194,7 @@
       <section>
         <section>
           <h2>Dataset 5</h2>
-          2000 – today<br />
+          2000 &ndash; Jan 2026<br />
           weekly DAX opening value (n=1,361)<br />
           Source: <a href="https://www.investing.com">investing.com</a>
         </section>
@@ -234,10 +221,19 @@
         </section>
       </section>
       <section>
-        <h3>Inspiration</h3>
+        <h2>Inspiration</h2>
         <p><a href="https://www.dkriesel.com">dkriesel.com</a></p>
         <aside class="notes">
           David Kriesel&rsquo;s talk at the CCC was the inspiration for this project. He seems pretty cool. Check out his blog: <a href="https://www.dkriesel.com">dkriesel.com</a>
+        </aside>
+      </section>
+      <section>
+        <h2>Backup</h2>
+      </section>
+      <section>
+        <video data-src="analysis/output/animations/time_correlation_dark.mp4" muted controls></video>
+        <aside class="notes">
+          Correlation between the parties&rsquo; 30-day averages, computed in a 30-day window moving through time. We thought governing parties might correlate. They don&rsquo;t. Looking for meaning in how the correlations change over time feels like reading tea leaves. Let&rsquo;s not do that, or we might convince ourselves we found something reasonable.
         </aside>
       </section>
       </div>
