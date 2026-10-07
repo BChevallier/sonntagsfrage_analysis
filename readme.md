@@ -91,3 +91,7 @@ David Kriesel's talk at the CCC inspired this project; see his blog at [dkriesel
 ## Authors
 
 Bastien Chevallier and Johannes Frohnmeyer.
+
+## License
+
+The code and the slides are licensed under the [GNU General Public License v3.0](LICENSE). The poll and economic data in `analysis/sources/data/` come from third parties (see [Data](#data)) and are not covered by this license.
